@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Alert Toggle</title>
+</head>
+<body>
+    <button id="alertButton" onclick="toggleAlert()">{{ button_label }}</button>
+
+    <script>
+        function toggleAlert() {
+            fetch("{% url 'toggle-alert' %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({})
+            }).then(response => response.json())
+              .then(data => {
+                  document.getElementById('alertButton').innerText = data.button_label;
+              });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Script Controller</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+    $("#startButton").click(function(){
+        $.ajax({
+            url: '/start/',
+            type: 'GET',
+            success: function(response) {
+                $("#message").text("Started: " + response.message);
+            },
+            error: function() {
+                $("#message").text("Error starting the script.");
+            }
+        });
+    });
+
+    $("#stopButton").click(function(){
+        $.ajax({
+            url: '/stop/',
+            type: 'GET',
+            success: function(response) {
+                $("#message").text("Stopped: " + response.message);
+            },
+            error: function() {
+                $("#message").text("Error stopping the script.");
+            }
+        });
+    });
+});
+</script>
+</head>
+<body>
+    <h1>Script Control Panel</h1>
+    <button id="startButton">Start Script</button>
+    <button id="stopButton">Stop Script</button>
+    <p id="message"></p>
+</body>
+</html>

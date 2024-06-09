@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+    Pricing Plans
+{% endblock %}
+
+{% block content %}
+
+<div class="container" style="text-align: center;">
+    <div class="section">
+        <h2>Pricing Plans</h2>
+        <div class="plans-container"> <!-- Container to hold all plans side by side -->  
+            <div class="plans-container">
+                {% if trial_message %}
+                    <div class="plan message-card">
+                        <p style="color: red; text-align: center; margin: auto; width: 100%;">{{ trial_message | safe }}</p>
+                    </div>
+                {% else %}
+                <div class="plan">
+                    <div class="plan-content"> <!-- Flex container for the plan content -->
+                        <h3>Free Plan</h3>
+                        <p>This plan allows a 7 days free trial</p>
+                    </div>
+                    <form action="{% url 'alert' %}" method="post" class="plan-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="plan" value="free">
+                        <input type="submit" class="start-now-button" value="Start Now">
+                    </form>
+                </div>
+                {% endif %}
+
+            <div class="plan">
+                <h3>Monthly Plan</h3>
+                <p>This plan allows you to receive Upwork job alerts for 30 days from subscription date</p>
+                <p>$5/month</p>
+                {% if month_sub_on %}
+                    <p style="color: #1DCD8D;">Your Monthly subscription is active.</p>
+                    <form action="{% url 'alert' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" style="display: inline-block; padding: 10px 20px; background-color: #1DCD8D; color: white; text-decoration: none; border-radius: 5px; transition: background-color 0.3s; border: none;">Click here to access alert page</button>
+                    </form>
+                {% elif sub_message %}
+                    <p style="color: red;">{{ sub_message | safe }}</p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="plan" value="monthly">
+                        <input type="submit" class="subscribe-button" value="Renew Subscription">
+                    </form>
+                {% else %}
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="plan" value="monthly">
+                    <input type="submit" class="subscribe-button" value="Subscribe Now">
+                </form>
+                {% endif %}
+        </div>
+        
+        <div class="plan">
+            <h3>Yearly Plan</h3>
+            <p>This plan allows you to receive Upwork job alerts for 365 days from subscription date</p>
+            <p>$48/year (20% discount)</p>
+            {% if year_sub_on %}
+                <p style="color: #1DCD8D;">Your annual subscription is active.</p>
+                <form action="{% url 'alert' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" style="display: inline-block; padding: 10px 20px; background-color: #1DCD8D; color: white; text-decoration: none; border-radius: 5px; transition: background-color 0.3s; border: none;">Click here to access alert page</button>
+                </form>
+            {% elif year_sub_message %}
+                <p style="color: red;">{{ year_sub_message | safe }}</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="plan" value="annual">
+                    <input type="submit" class="subscribe-button" value="Renew Subscription">
+                </form>
+            {% else %}
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="plan" value="annual">
+                <input type="submit" class="subscribe-button" value="Subscribe Now">
+            </form>
+            {% endif %}
+        </div>
+        
+    </div>
+</div>
+
+
+
+
+
+<style>
+    
+    .plans-container {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+    
+    .plan {
+        display: flex; /* New: Setup flexbox for vertical layout */
+        flex-direction: column; /* Stack children vertically */
+        justify-content: space-between; /* Space between content and button */
+        flex: 1 1 300px;
+        margin-bottom: 20px;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: white;
+    }
+
+
+
+    .plan-form {
+        margin-top: auto; /* Pushes the form to the bottom */
+    }
+
+    .start-now-button, .subscribe-button {
+        display: block;
+        width: 100%;
+        padding: 10px 20px;
+        background-color: #1DCD8D;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+
+    .start-now-button:hover, .subscribe-button:hover {
+        background-color: #17a17b;
+    }
+</style>
+{% endblock %}

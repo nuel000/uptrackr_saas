@@ -1,0 +1,207 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap">
+    
+    <!-- Load favicon -->
+    <link
+      rel="shortcut icon"
+      type="image/png"
+      href="{% static 'img/up_logoO.ico' %}"
+    />
+
+    <style>
+        .nav-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Nunito', Arial, sans-serif;
+            background-color: #F4F4F4;
+        }
+        
+        .logo {
+            height: 40px;
+            width: auto;
+            margin-right: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .topnav {
+            display: flex;
+            gap: 20px;
+        }
+    
+        .topnav a {
+            color: #0e0d0d;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 17px;
+            font-weight: bold;
+        }
+    
+        .topnav a:hover, .topnav a.active {
+            background-color: #1DCD8D;
+            color: black;
+            border-radius: 5px;
+        }
+    
+        .signup-button {
+            padding: 10px 20px;
+            background-color: #1DCD8D;
+            color: white;
+            text-decoration: none;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+    
+        .signup-button:hover {
+            background-color: #15a357;
+        }
+
+        .hamburger {
+            display: none;
+            cursor: pointer;
+        }
+
+        .hamburger div {
+            width: 25px;
+            height: 3px;
+            background-color: black;
+            margin: 5px;
+        }
+
+        @media only screen and (max-width: 768px) {
+            .header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .topnav {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                align-items: flex-end;
+                position: absolute;
+                top: 80px;
+                right: 0;
+                background-color: #f4f4f4;
+                padding: 20px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                z-index: 1;
+            }
+
+            .topnav a {
+                text-align: right;
+                padding: 10px;
+            }
+
+    
+            .hamburger {
+            display: block;
+            position: absolute;  /* Add position absolute */
+            right: 20px;         /* Position it 20px from the right */
+            top: 20px;           /* Position it 20px from the top */
+        }
+
+            .topnav.responsive {
+                display: flex;
+            }
+        }
+    </style>
+    
+</head>
+<body>
+    <header class="header">
+        <a href="{% url 'home' %}">
+            <img src="{% static 'img/up_logo.png' %}" alt="Your Logo" class="logo">
+        </a>
+        <div class="hamburger" onclick="toggleMenu()">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div class="nav-container">
+            {% if user.is_authenticated %}
+                <nav class="topnav" id="navbar">
+                    <a href="{% url 'home' %}"> Home </a>
+                    <a href="{% url 'dashboard' %}">Dashboard</a>
+                    <a href="{% url 'pricing' %}">Pricing</a>
+                    <a href="{% url 'logout' %}">Logout</a>
+                    <a href="{% url 'update_account' %}">Update Account</a>
+                </nav>
+        
+            {% else %}
+                <nav class="topnav" id="navbar">
+                    <a href="{% url 'home' %}"> Home </a>
+                    <a href="{% url 'home' %}#how-it-works-section">How it works</a>
+                    <a href="{% url 'pricing' %}">Pricing</a>
+                    <a href="{% url 'login' %}">Login</a>
+                    <a href ="{% url 'signup' %}"  class="signup-button">Sign up for free</a>
+                </nav>
+            
+            {% endif %}
+        </div>
+    </header>
+    
+    <div class="content">
+        {% block content %}
+
+        {% endblock %}
+    </div>
+
+    <script>
+        function toggleMenu() {
+            var topnav = document.getElementById("navbar");
+            topnav.classList.toggle("responsive");
+        }
+    </script>
+
+    <script>
+        function smoothScroll(target) {
+            var element = document.getElementById(target);
+            var offset = 50;
+            
+            if (element) {
+                window.scrollTo({
+                    top: element.offsetTop - offset,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            if(window.location.hash) {
+                smoothScroll(window.location.hash.substring(1));
+            }
+        });
+
+        function smoothScroll(targetId) {
+            var element = document.getElementById(targetId);
+            var offset = 50;
+
+            if (element) {
+                window.scrollTo({
+                    top: element.offsetTop - offset,
+                    behavior: 'smooth'
+                });
+            }
+        }
+    </script>
+
+</body>
+</html>
