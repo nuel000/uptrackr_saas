@@ -33,7 +33,7 @@ SECRET_KEY = 'django-insecure-*(=)ki%xdi6!1(5e%%fjn!-=n4b2(hal1-wjkb5nnkn#idc(&6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', 'c2ec-105-113-60-150.ngrok.io','c2ec-105-113-60-150.ngrok-free.app','www.uptrackr.co','uptrackr.co','https://uptrackr.co']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', 'c2ec-105-113-60-150.ngrok.io','c2ec-105-113-60-150.ngrok-free.app','www.uptrackr.co','uptrackr.co','https://uptrackr.co'],'uptrackr-4de91a94430b.herokuapp.com'
 
 
 
@@ -61,7 +61,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 CORS_ALLOW_ALL_ORIGIN = True
-CSRF_TRUSTED_ORIGINS = ['https://c2ec-105-113-60-150.ngrok-free.app','https://uptrackr.co']
+CSRF_TRUSTED_ORIGINS = ['https://c2ec-105-113-60-150.ngrok-free.app','https://uptrackr.co','https://uptrackr-4de91a94430b.herokuapp.com/']
 
 
 
