@@ -36,7 +36,7 @@ class CustomUser(AbstractBaseUser):
 class RssDetails(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     email = models.EmailField()
-    rss_url = models.URLField()
+    rss_url = models.URLField(max_length=500)
 
     def __str__(self):
         return f"{self.user.username}'s RSS details"
