@@ -13,6 +13,9 @@ email_password = os.environ.get("MY_PASSWORD")
 def send_activation_mail(email_receiver, username, activation_link):
     email_sender =  'thedatadude000@gmail.com'
     email_password = os.environ.get("MY_PASSWORD")
+    print('This is........')
+    print(email_sender)
+    print(email_password)
 
     email_receiver = f'{email_receiver}'
     receiver_name = 'UpTrackr'  
