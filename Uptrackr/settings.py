@@ -96,12 +96,8 @@ WSGI_APPLICATION = 'Uptrackr.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': f'{db_name}',
-        'USER': f'{db_username}',
-        'PASSWORD': f'{db_password}',
-        'HOST': 'localhost',
-        'PORT': '5432',  # default PostgreSQL port
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
