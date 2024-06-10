@@ -1,1 +1,1 @@
-web: gunicorn Uptrackr.wsgi --log--file -
+web: gunicorn Uptrackr.wsgi --log-file -
