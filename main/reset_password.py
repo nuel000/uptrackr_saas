@@ -6,7 +6,9 @@ import os
 
 # Load environment variables from .env file
 load_dotenv()
-email_password = os.environ.get("MY_PASSWORD")
+# email_password = os.environ.get("MY_PASSWORD")
+email_password = "iybw apas orcf mdmm"
+
 
 
 

@@ -22,7 +22,8 @@ import uuid
 
 # Load environment variables from .env file
 load_dotenv()
-email_password = os.environ.get("MY_PASSWORD")
+# email_password = os.environ.get("MY_PASSWORD")
+email_password = "iybw apas orcf mdmm"
 
 def send_mail(email_receiver, body):
     email_sender = 'thedatadude000@gmail.com'
