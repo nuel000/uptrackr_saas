@@ -151,7 +151,7 @@ def pricing_page(request):
     year_sub_message = None
     trial_user = FreeTrialUser.objects.filter(user=user).first()
     if trial_user:
-        if trial_user.start_date + timedelta(minutes=10) <= timezone.now():
+        if trial_user.start_date + timedelta(days=7) <= timezone.now():
             trial_message = 'Your free trial has expired. Please subscribe to continue.'
             terminate_process_success = terminate_process(user)
             if terminate_process_success:
@@ -667,7 +667,7 @@ def display_html(request):
             expiration_date_passed = False
             
     elif trial_user:
-        if trial_user.start_date + timedelta(minutes=10) <= timezone.now():
+        if trial_user.start_date + timedelta(days=7) <= timezone.now():
             stop_script(request)
             print('Script has been stopped')
             sub_status = 'Free Trial Expired'
