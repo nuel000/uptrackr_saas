@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
             name='RssDetails',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('email', models.EmailField(max_length=254)),
+                ('email', models.EmailField(max_length=200)),
                 ('rss_url', models.URLField()),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
