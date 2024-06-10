@@ -14,6 +14,8 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 load_dotenv()
+import dj_database_url
+
 
 
 db_name = os.environ.get("DB_NAME")
@@ -115,15 +117,8 @@ WSGI_APPLICATION = 'Uptrackr.wsgi.application'
 
 # DATABASES = {
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'uptrackr_db',
-        'USER': 'postgres',
-        'PASSWORD': 'Ilovemymummy22',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
+    'default': dj_database_url.config(default='postgres://ufklhl6o056oit:pe7b06a5c25ec9c2c6bc61ce86e5737d3e10fa4a3864c0b9e6d2b1c6281da3a35@c5flugvup2318r.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/df1bm1qhjdg3nk', conn_max_age=600)
+}   
 
 
 
