@@ -61,7 +61,25 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_countries',
     'app',
+    'django_rq',
   ]
+
+
+# Redis configuration
+import redis
+from django.conf import settings
+
+REDIS_URL = settings.env.get('REDIS_URL', 'redis://localhost:6379')
+REDIS_CONNECTION = redis.from_url(REDIS_URL)
+
+# Django-RQ configuration
+RQ_QUEUES = {
+    'default': {
+        'HOST': REDIS_CONNECTION,
+        'DB': 0,
+        'DEFAULT_TIMEOUT': 360,
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
