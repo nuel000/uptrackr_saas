@@ -72,18 +72,28 @@ import environ
 env = environ.Env()
 environ.Env.read_env()
 
+import os
+import environ
+
+env = environ.Env()
+environ.Env.read_env()
+from urllib.parse import urlparse
+
 REDIS_URL = 'rediss://:p2be759c823d588aecec220f8c02cec458805027934c96a99a70c774208701c33@ec2-52-5-163-168.compute-1.amazonaws.com:16330'
 
-
+url = urlparse(REDIS_URL)
 
 # Django-RQ configuration
 RQ_QUEUES = {
     'default': {
-        'HOST': REDIS_URL,
+        'HOST': url.hostname,
+        'PORT': url.port,
         'DB': 0,
+        'PASSWORD': url.password,
         'DEFAULT_TIMEOUT': 360,
     }
 }
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
