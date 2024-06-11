@@ -66,16 +66,20 @@ INSTALLED_APPS = [
 
 
 # Redis configuration
-import redis
-from django.conf import settings
+import os
+import environ
 
-REDIS_URL = settings.env.get('REDIS_URL', 'redis://localhost:6379')
-REDIS_CONNECTION = redis.from_url(REDIS_URL)
+env = environ.Env()
+environ.Env.read_env()
+
+REDIS_URL = 'rediss://:p2be759c823d588aecec220f8c02cec458805027934c96a99a70c774208701c33@ec2-52-5-163-168.compute-1.amazonaws.com:16330'
+
+
 
 # Django-RQ configuration
 RQ_QUEUES = {
     'default': {
-        'HOST': REDIS_CONNECTION,
+        'HOST': REDIS_URL,
         'DB': 0,
         'DEFAULT_TIMEOUT': 360,
     }
