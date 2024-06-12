@@ -18,9 +18,9 @@ import dj_database_url
 
 
 
-db_name = os.environ.get("DB_NAME")
-db_username = os.environ.get("DB_USERNAME")
-db_password = os.environ.get("DB_PASSWORD")
+# db_name = os.environ.get("DB_NAME")
+# db_username = os.environ.get("DB_USERNAME")
+# db_password = os.environ.get("DB_PASSWORD")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -43,7 +43,8 @@ ALLOWED_HOSTS = [
     'c2ec-105-113-60-150.ngrok-free.app',
     'www.uptrackr.co',
     'uptrackr.co',
-    'uptrackr-4de91a94430b.herokuapp.com'
+    'uptrackr-4de91a94430b.herokuapp.com',
+    '143.244.144.220'
 ]
 
 
@@ -65,34 +66,6 @@ INSTALLED_APPS = [
   ]
 
 
-# Redis configuration
-import os
-import environ
-
-env = environ.Env()
-environ.Env.read_env()
-
-import os
-import environ
-
-env = environ.Env()
-environ.Env.read_env()
-from urllib.parse import urlparse
-
-REDIS_URL = 'rediss://:p2be759c823d588aecec220f8c02cec458805027934c96a99a70c774208701c33@ec2-52-5-163-168.compute-1.amazonaws.com:16330'
-
-url = urlparse(REDIS_URL)
-
-# Django-RQ configuration
-RQ_QUEUES = {
-    'default': {
-        'HOST': url.hostname,
-        'PORT': url.port,
-        'DB': 0,
-        'PASSWORD': url.password,
-        'DEFAULT_TIMEOUT': 360,
-    }
-}
 
 
 MIDDLEWARE = [
@@ -147,11 +120,16 @@ WSGI_APPLICATION = 'Uptrackr.wsgi.application'
 #     }
 # }
 
-# DATABASES = {
 DATABASES = {
-    'default': dj_database_url.config(default='postgres://ufklhl6o056oit:pe7b06a5c25ec9c2c6bc61ce86e5737d3e10fa4a3864c0b9e6d2b1c6281da3a35@c5flugvup2318r.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/df1bm1qhjdg3nk', conn_max_age=600)
-}   
-
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'uptrackr_db',
+        'USER': 'uptrackr',
+        'PASSWORD': 'Ilovemymummy22',
+        'HOST': 'localhost',
+        'PORT': '',
+    }
+}
 
 
 # Password validation
@@ -188,7 +166,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = BASE_DIR/'static'
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
