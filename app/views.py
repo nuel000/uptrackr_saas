@@ -79,65 +79,65 @@ def run_job(email, rss_url):
     global terminate_signal
     while not terminate_signal.is_set():
         job(email, rss_url)
-        time.sleep()
+        time.sleep(2)
         
-def terminate_process(user):
-    if user.username in processes:
-        process = processes[user.username]
-        print(f"Terminating process for user: {user.username}, PID: {process.pid}")
-        try:
-            process.send_signal(signal.SIGTERM)
-            process.wait(timeout=5)
-            del processes[user.username]
-            print(f"Process terminated successfully for user: {user.username}")
-            return True
-        except subprocess.TimeoutExpired:
-            print(f"Process timed out for user: {user.username}, force killing...")
-            process.kill()
-            del processes[user.username]
-            return False
-    else:
-        return False
+# def terminate_process(user):
+#     if user.username in processes:
+#         process = processes[user.username]
+#         print(f"Terminating process for user: {user.username}, PID: {process.pid}")
+#         try:
+#             process.send_signal(signal.SIGTERM)
+#             process.wait(timeout=5)
+#             del processes[user.username]
+#             print(f"Process terminated successfully for user: {user.username}")
+#             return True
+#         except subprocess.TimeoutExpired:
+#             print(f"Process timed out for user: {user.username}, force killing...")
+#             process.kill()
+#             del processes[user.username]
+#             return False
+#     else:
+#         return False
     
     
     
-def check_subscription_and_terminate():
-    users = User.objects.all()
-    for user in users:
-        subscribed_user = SubscriptionPayment.objects.filter(user_name=user).first()
-        trial_user = FreeTrialUser.objects.filter(user=user).first()
-        if trial_user:
-            if trial_user.start_date + timedelta(days=7) <= timezone.now():
-                terminate_process_success = terminate_process(user)
-                if terminate_process_success:
-                    print(f"Process terminated successfully for user: {user.username}")
-                else:
-                    pass
+# def check_subscription_and_terminate():
+#     users = User.objects.all()
+#     for user in users:
+#         subscribed_user = SubscriptionPayment.objects.filter(user_name=user).first()
+#         trial_user = FreeTrialUser.objects.filter(user=user).first()
+#         if trial_user:
+#             if trial_user.start_date + timedelta(days=7) <= timezone.now():
+#                 terminate_process_success = terminate_process(user)
+#                 if terminate_process_success:
+#                     print(f"Process terminated successfully for user: {user.username}")
+#                 else:
+#                     pass
      
-        if subscribed_user:
-            if subscribed_user.total_formatted == '$5.00':
-                if subscribed_user.created_at + timedelta(days=29) <= timezone.now():
-                    terminate_process_success = terminate_process(user)
-                    if terminate_process_success:
-                        print(f"Process terminated successfully for user: {user.username}")
-                    else:
-                        pass
-            elif subscribed_user.total_formatted == '$48.00':
-                if subscribed_user.created_at + timedelta(days=364) <= timezone.now():
-                    terminate_process_success = terminate_process(user)
-                    if terminate_process_success:
-                        print(f"Process terminated successfully for user: {user.username}")
-                    else:
-                        pass
+#         if subscribed_user:
+#             if subscribed_user.total_formatted == '$5.00':
+#                 if subscribed_user.created_at + timedelta(days=29) <= timezone.now():
+#                     terminate_process_success = terminate_process(user)
+#                     if terminate_process_success:
+#                         print(f"Process terminated successfully for user: {user.username}")
+#                     else:
+#                         pass
+#             elif subscribed_user.total_formatted == '$48.00':
+#                 if subscribed_user.created_at + timedelta(days=364) <= timezone.now():
+#                     terminate_process_success = terminate_process(user)
+#                     if terminate_process_success:
+#                         print(f"Process terminated successfully for user: {user.username}")
+#                     else:
+#                         pass
 
-def periodic_subscription_check():
-    while True:
-        check_subscription_and_terminate()
-        time.sleep(1)  # Wait for 1 minute before checking again
+# def periodic_subscription_check():
+#     while True:
+#         check_subscription_and_terminate()
+#         time.sleep(1)  # Wait for 1 minute before checking again
 
-# Start the background thread when the Django server starts up
-thread = threading.Thread(target=periodic_subscription_check)
-thread.start()
+# # Start the background thread when the Django server starts up
+# thread = threading.Thread(target=periodic_subscription_check)
+# thread.start()
 
         
 # pricing
@@ -153,11 +153,11 @@ def pricing_page(request):
     if trial_user:
         if trial_user.start_date + timedelta(days=7) <= timezone.now():
             trial_message = 'Your free trial has expired. Please subscribe to continue.'
-            terminate_process_success = terminate_process(user)
-            if terminate_process_success:
-                print(f"Process terminated successfully for user: {user.username}")
-            else:
-                print(f"Failed to terminate process for user: {user.username}")
+            # terminate_process_success = terminate_process(user)
+            # if terminate_process_success:
+            #     print(f"Process terminated successfully for user: {user.username}")
+            # else:
+            #     print(f"Failed to terminate process for user: {user.username}")
         else:
             trial_message = 'Your free trial is already active. Please go back to <a href="dashboard">dashboard</a> to see your stats.'
     else:

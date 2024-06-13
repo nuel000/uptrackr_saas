@@ -122,7 +122,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'uptrackr_db',
-        'USER': 'uptrackr',
+        'USER': 'nuel000',
         'PASSWORD': 'Ilovemymummy22',
         'HOST': 'localhost',
         'PORT': '',
