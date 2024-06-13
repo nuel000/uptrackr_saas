@@ -212,24 +212,13 @@ def pricing_page(request):
 
 processes = {}
 
-# def start_script(request):
-#     user = request.user
-#     rss_user = RssDetails.objects.filter(user=user).first()
-#     if rss_user:
-#         process = subprocess.Popen(['python', r'main\main.py', rss_user.email, rss_user.rss_url])
-#         processes[user.username] = process
-#         return JsonResponse({'message': 'Alert started', 'pid': process.pid})
-#     else:
-#         return JsonResponse({'error': 'RSS details not found for user'}, status=404)
-import django_rq
-from .tasks import run_main_script
 def start_script(request):
     user = request.user
     rss_user = RssDetails.objects.filter(user=user).first()
     if rss_user:
-        queue = django_rq.get_queue('default')
-        job = queue.enqueue(run_main_script, rss_user.email, rss_user.rss_url)
-        return JsonResponse({'message': 'Alert started', 'job_id': job.id})
+        process = subprocess.Popen(['python', r'main\main.py', rss_user.email, rss_user.rss_url])
+        processes[user.username] = process
+        return JsonResponse({'message': 'Alert started', 'pid': process.pid})
     else:
         return JsonResponse({'error': 'RSS details not found for user'}, status=404)
 

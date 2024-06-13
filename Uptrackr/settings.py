@@ -61,7 +61,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_countries',
     'app',
-    'django_rq',
   ]
 
 
