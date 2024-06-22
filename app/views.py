@@ -210,6 +210,7 @@ def start_script(request):
     rss_user = RssDetails.objects.filter(user=user).first()
     if rss_user:
         pid = ProcessManager.start_process(user, rss_user)
+        time.sleep(5)
         if pid is not None:
             return JsonResponse({'message': 'Alert started', 'pid': pid})
         else:
@@ -220,6 +221,7 @@ def start_script(request):
 def stop_script(request):
     user = request.user
     if ProcessManager.stop_process(user):
+        time.sleep(5)
         return JsonResponse({'message': 'Alert stopped'})
     else:
         return JsonResponse({'error': 'No script is running for this user'}, status=404)
