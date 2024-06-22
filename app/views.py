@@ -82,19 +82,22 @@ def run_job(email, rss_url):
         
 
 def terminate_process(user):
-    if ProcessManager.process is not None and ProcessManager.process.poll() is None:
-        print(f"Terminating process for user: {user.username}, PID: {ProcessManager.process.pid}")
+    if user.username in ProcessManager.processes and ProcessManager.processes[user.username].poll() is None:
+        print(f"Terminating process for user: {user.username}, PID: {ProcessManager.processes[user.username].pid}")
         try:
-            ProcessManager.stop_process()
+            ProcessManager.processes[user.username].send_signal(signal.SIGTERM)
+            ProcessManager.processes[user.username].wait()
+            del ProcessManager.processes[user.username]
             print(f"Process terminated successfully for user: {user.username}")
             return True
         except subprocess.TimeoutExpired:
             print(f"Process timed out for user: {user.username}, force killing...")
-            ProcessManager.process.kill()
-            ProcessManager.process = None
+            ProcessManager.processes[user.username].kill()
+            del ProcessManager.processes[user.username]
             return False
     else:
         return False
+
 
 def check_subscription_and_terminate():
     # Get all users
