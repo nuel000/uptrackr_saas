@@ -191,6 +191,31 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
 $(document).ready(function() {
+    // Function to update alert status
+    function updateAlertStatus() {
+        console.log("Updating alert status...");
+        $.ajax({
+            url: "{% url 'get_alert_status' %}",
+            type: "GET",
+            dataType: "json",
+            success: function(data) {
+                console.log("Alert status received:", data.alert_status);
+                var alertStatus = data.alert_status;
+                var statusDiv = $(".alert-status-div");
+                statusDiv.removeClass("text-red text-green");
+                if (alertStatus === "OFF") {
+                    statusDiv.addClass("text-red").html("<b>" + alertStatus + "</b>");
+                } else {
+                    statusDiv.addClass("text-green").html("<b>" + alertStatus + "</b>");
+                }
+            },
+            error: function() {
+                console.log("Error fetching alert status.");
+            }
+        });
+    }
+
+    // Start button click event
     $("#startButton").click(function() {
         // Display the loading message
         $("#message").text("Starting Script...");
@@ -208,29 +233,32 @@ $(document).ready(function() {
         });
     });
 
+    // Stop button click event
     $("#stopButton").click(function() {
         // Display the loading message
-        $("#message").text("Stopping Script.Please wait....");
+        $("#message").text("Stopping Script. Please wait...");
 
-        setTimeout(function() {
-            $.ajax({
-                url: '/stop/',
-                type: 'GET',
-                success: function(response) {
-                    $("#message").text("Stopped: " + response.message);
-                    updateAlertStatus(); // Update alert status after stopping the script
-                },
-                error: function() {
-                    $("#message").text("Error stopping the script.");
-                }
-            });
-        }, 500); // Delay of 500 milliseconds
+        $.ajax({
+            url: '/stop/',
+            type: 'GET',
+            success: function(response) {
+                $("#message").text("Stopped: " + response.message);
+                updateAlertStatus(); // Update alert status after stopping the script
+            },
+            error: function() {
+                $("#message").text("Error stopping the script.");
+            }
+        });
     });
+
+    // Update alert status on page load
+    updateAlertStatus();
+
+    // Periodically update alert status
+    setInterval(updateAlertStatus, 5000); // Update every 5 seconds
 });
-
-
-
 </script>
+
 
 <script>
     function cancelSubscription() {
