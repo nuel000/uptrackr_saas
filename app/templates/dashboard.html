@@ -23,7 +23,7 @@
           </div>
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <p>ALERT STATUS:</p>
-            <div class="alert-status-div" style="flex-grow: 1; text-align: center;"></div>
+            <div style="flex-grow: 1; text-align: center;"><b>{{ alert_status }}</b></div>
         </div>
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <p>EMAIL:</p>
@@ -254,8 +254,6 @@ $(document).ready(function() {
     // Update alert status on page load
     updateAlertStatus();
 
-    // Periodically update alert status
-    setInterval(updateAlertStatus, 5000); // Update every 5 seconds
 });
 </script>
 
