@@ -626,6 +626,7 @@ def password_reset_confirm(request, uidb64, token):
 def base_view(request):
     return render(request, 'base.html')
 
+
 @login_required
 def display_html(request):
     sub_status = None
@@ -634,8 +635,8 @@ def display_html(request):
     alert_status = 'OFF'  # Set the default alert status to 'OFF'
     user = request.user
 
-    # Check if a process is running
-    if ProcessManager.process is not None and ProcessManager.process.poll() is None:
+    # Check if a process is running for the user
+    if user.username in ProcessManager.processes and ProcessManager.processes[user.username].poll() is None:
         alert_status = 'ON'
 
     subscribed_user = SubscriptionPayment.objects.filter(user_name=user).first()
@@ -644,11 +645,11 @@ def display_html(request):
 
     if subscribed_user:
         if subscribed_user.total_formatted == '$5.00' and subscribed_user.expiration_date <= timezone.now():
-            ProcessManager.stop_process()
+            ProcessManager.stop_process(user)
             sub_status = 'OFF'
             sub_end_date = subscribed_user.expiration_date
         elif subscribed_user.total_formatted == '$48.00' and subscribed_user.expiration_date <= timezone.now():
-            ProcessManager.stop_process()
+            ProcessManager.stop_process(user)
             sub_status = 'OFF'
             sub_end_date = subscribed_user.expiration_date
         else:
@@ -664,7 +665,7 @@ def display_html(request):
             expiration_date_passed = False
     elif trial_user:
         if trial_user.start_date + timedelta(days=7) <= timezone.now():
-            ProcessManager.stop_process()
+            ProcessManager.stop_process(user)
             print('Script has been stopped')
             sub_status = 'Free Trial Expired'
         else:
@@ -686,22 +687,17 @@ def display_html(request):
     return render(request, 'dashboard.html', context)
 
 
-
-
-
-
-
-
-
 @login_required
 def get_alert_status(request):
     print("get_alert_status called")
-    if ProcessManager.process is not None and ProcessManager.process.poll() is None:
+    user = request.user
+    if user.username in ProcessManager.processes and ProcessManager.processes[user.username].poll() is None:
         alert_status = 'ON'
     else:
         alert_status = 'OFF'
     print(f"Returning alert_status: {alert_status}")
     return JsonResponse({'alert_status': alert_status})
+
 
 
 
