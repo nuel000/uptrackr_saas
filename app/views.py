@@ -219,10 +219,11 @@ def start_script(request):
 
 def stop_script(request):
     user = request.user
-    if ProcessManager.stop_process():
+    if ProcessManager.stop_process(user):
         return JsonResponse({'message': 'Alert stopped'})
     else:
         return JsonResponse({'error': 'No script is running for this user'}, status=404)
+
 
 
 
