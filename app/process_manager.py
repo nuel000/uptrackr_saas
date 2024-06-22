@@ -24,7 +24,7 @@ class ProcessManager:
             # A process is running for the user, terminate it
             try:
                 cls.processes[user.username].send_signal(signal.SIGTERM)
-                cls.processes[user.username].wait(timeout=5)  # Timeout in seconds
+                cls.processes[user.username].wait(timeout=10)  # Timeout in seconds
                 del cls.processes[user.username]
                 return True
             except subprocess.TimeoutExpired:
