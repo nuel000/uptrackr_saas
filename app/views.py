@@ -97,33 +97,34 @@ def terminate_process(user):
         return False
 
 def check_subscription_and_terminate():
+    # Get all users
     users = User.objects.all()
+    
     for user in users:
+        # Check if the user has a subscription
         subscribed_user = SubscriptionPayment.objects.filter(user_name=user).first()
+        
+        # Check if the user is on a free trial
         trial_user = FreeTrialUser.objects.filter(user=user).first()
-        if trial_user:
-            if trial_user.start_date + timedelta(days=7) <= timezone.now():
-                terminate_process_success = terminate_process(user)
-                if terminate_process_success:
-                    print(f"Process terminated successfully for user: {user.username}")
-                else:
-                    pass
+        
+        # Check if the user's subscription has expired
+        if trial_user and trial_user.start_date + timedelta(days=7) <= timezone.now():
+            terminate_process_success = terminate_process(user)
+            if terminate_process_success:
+                print(f"Process terminated successfully for user: {user.username}")
+        
+        # Check if the user's monthly subscription has expired
+        if subscribed_user and subscribed_user.total_formatted == '$5.00' and subscribed_user.created_at + timedelta(days=29) <= timezone.now():
+            terminate_process_success = terminate_process(user)
+            if terminate_process_success:
+                print(f"Process terminated successfully for user: {user.username}")
+        
+        # Check if the user's yearly subscription has expired
+        if subscribed_user and subscribed_user.total_formatted == '$48.00' and subscribed_user.created_at + timedelta(days=364) <= timezone.now():
+            terminate_process_success = terminate_process(user)
+            if terminate_process_success:
+                print(f"Process terminated successfully for user: {user.username}")
 
-        if subscribed_user:
-            if subscribed_user.total_formatted == '$5.00':
-                if subscribed_user.created_at + timedelta(days=29) <= timezone.now():
-                    terminate_process_success = terminate_process(user)
-                    if terminate_process_success:
-                        print(f"Process terminated successfully for user: {user.username}")
-                    else:
-                        pass
-            elif subscribed_user.total_formatted == '$48.00':
-                if subscribed_user.created_at + timedelta(days=364) <= timezone.now():
-                    terminate_process_success = terminate_process(user)
-                    if terminate_process_success:
-                        print(f"Process terminated successfully for user: {user.username}")
-                    else:
-                        pass
 
 def periodic_subscription_check():
     while True:
