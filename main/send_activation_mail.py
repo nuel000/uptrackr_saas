@@ -6,13 +6,13 @@ import os
 
 # Load environment variables from .env file
 load_dotenv()
-email_password = os.environ.get("MY_PASSWORD")
+email_password = "moca yzvv vyaw synx"
 
 
 
 def send_activation_mail(email_receiver, username, activation_link):
-    email_sender =  'thedatadude000@gmail.com'
-    email_password = "iybw apas orcf mdmm"
+    email_sender =  'alerts@uptrackr.co'
+    email_password = "moca yzvv vyaw synx"
 
 
     email_receiver = f'{email_receiver}'

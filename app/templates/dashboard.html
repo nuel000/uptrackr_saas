@@ -58,33 +58,45 @@
               <p id="message" style="margin-bottom: 10px;"></p>
               <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
               <script>
-              $(document).ready(function(){
-                  $("#startButton").click(function(){
-                      $.ajax({
-                          url: '/start/',
-                          type: 'GET',
-                          success: function(response) {
-                              $("#message").text("Started: " + response.message);
-                          },
-                          error: function() {
-                              $("#message").text("Error starting the script.");
-                          }
-                      });
-                  });
-          
-                  $("#stopButton").click(function(){
-                      $.ajax({
-                          url: '/stop/',
-                          type: 'GET',
-                          success: function(response) {
-                              $("#message").text("Stopped: " + response.message);
-                          },
-                          error: function() {
-                              $("#message").text("Error stopping the script.");
-                          }
-                      });
-                  });
-              });
+              $(document).ready(function() {
+    $("#startButton").click(function() {
+        // Display the loading message
+        $("#message").text("Starting Script...");
+
+        $.ajax({
+            url: '/start/',
+            type: 'GET',
+            success: function(response) {
+                $("#message").text("Started: " + response.message);
+                updateAlertStatus(); // Update alert status after starting the script
+            },
+            error: function() {
+                $("#message").text("Error starting the script.");
+            }
+        });
+    });
+
+    $("#stopButton").click(function() {
+        // Display the loading message
+        $("#message").text("Stopping Script.Please wait...");
+
+        setTimeout(function() {
+            $.ajax({
+                url: '/stop/',
+                type: 'GET',
+                success: function(response) {
+                    $("#message").text("Stopped: " + response.message);
+                    updateAlertStatus(); // Update alert status after stopping the script
+                },
+                error: function() {
+                    $("#message").text("Error stopping the script.");
+                }
+            });
+        }, 500); // Delay of 500 milliseconds
+    });
+});
+
+
               </script>
             {% elif subscription_status == 'ON' %}
               <button id="cancelSubscriptionButton" class="custom-button" style="background-color: rgb(31, 31, 29); margin-bottom: 10px;" onclick="cancelSubscription()">Cancel Subscription</button>
@@ -93,33 +105,43 @@
               <p id="message" style="margin-bottom: 10px;"></p>
               <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
               <script>
-              $(document).ready(function(){
-                  $("#startButton").click(function(){
-                      $.ajax({
-                          url: '/start/',
-                          type: 'GET',
-                          success: function(response) {
-                              $("#message").text("Started: " + response.message);
-                          },
-                          error: function() {
-                              $("#message").text("Error starting the script.");
-                          }
-                      });
-                  });
-          
-                  $("#stopButton").click(function(){
-                      $.ajax({
-                          url: '/stop/',
-                          type: 'GET',
-                          success: function(response) {
-                              $("#message").text("Stopped: " + response.message);
-                          },
-                          error: function() {
-                              $("#message").text("Error stopping the script.");
-                          }
-                      });
-                  });
-              });
+              $(document).ready(function() {
+    $("#startButton").click(function() {
+        // Display the loading message
+        $("#message").text("Starting Script...");
+
+        $.ajax({
+            url: '/start/',
+            type: 'GET',
+            success: function(response) {
+                $("#message").text("Started: " + response.message);
+                updateAlertStatus(); // Update alert status after starting the script
+            },
+            error: function() {
+                $("#message").text("Error starting the script.");
+            }
+        });
+    });
+
+    $("#stopButton").click(function() {
+        // Display the loading message
+        $("#message").text("Stopping Script.Please wait...");
+
+        setTimeout(function() {
+            $.ajax({
+                url: '/stop/',
+                type: 'GET',
+                success: function(response) {
+                    $("#message").text("Stopped: " + response.message);
+                    updateAlertStatus(); // Update alert status after stopping the script
+                },
+                error: function() {
+                    $("#message").text("Error stopping the script.");
+                }
+            });
+        }, 500); // Delay of 500 milliseconds
+    });
+});
               </script>
           
               <script>
@@ -159,13 +181,17 @@
 <p id="message" style="margin-bottom: 10px;"></p>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
-$(document).ready(function(){
-    $("#startButton").click(function(){
+$(document).ready(function() {
+    $("#startButton").click(function() {
+        // Display the loading message
+        $("#message").text("Starting Script...");
+
         $.ajax({
             url: '/start/',
             type: 'GET',
             success: function(response) {
                 $("#message").text("Started: " + response.message);
+                updateAlertStatus(); // Update alert status after starting the script
             },
             error: function() {
                 $("#message").text("Error starting the script.");
@@ -173,19 +199,28 @@ $(document).ready(function(){
         });
     });
 
-    $("#stopButton").click(function(){
-        $.ajax({
-            url: '/stop/',
-            type: 'GET',
-            success: function(response) {
-                $("#message").text("Stopped: " + response.message);
-            },
-            error: function() {
-                $("#message").text("Error stopping the script.");
-            }
-        });
+    $("#stopButton").click(function() {
+        // Display the loading message
+        $("#message").text("Stopping Script.Please wait....");
+
+        setTimeout(function() {
+            $.ajax({
+                url: '/stop/',
+                type: 'GET',
+                success: function(response) {
+                    $("#message").text("Stopped: " + response.message);
+                    updateAlertStatus(); // Update alert status after stopping the script
+                },
+                error: function() {
+                    $("#message").text("Error stopping the script.");
+                }
+            });
+        }, 500); // Delay of 500 milliseconds
     });
 });
+
+
+
 </script>
 
 <script>
@@ -205,7 +240,7 @@ $(document).ready(function(){
 
       function getCookie(name) {
         let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
+         if (document.cookie && document.cookie !== '') {
           const cookies = document.cookie.split(';');
           for (let i = 0; i < cookies.length; i++) {
             const cookie = cookies[i].trim();
@@ -221,16 +256,14 @@ $(document).ready(function(){
 
 <script src="{% static 'js/jquery.min.js' %}"></script>
 <script>
-    $(document).ready(function() {
-        setInterval(updateAlertStatus, 100); // Update alert status every 5 seconds
-    });
-
     function updateAlertStatus() {
+        console.log("Updating alert status...");
         $.ajax({
             url: "{% url 'get_alert_status' %}",
             type: "GET",
             dataType: "json",
             success: function(data) {
+                console.log("Alert status received:", data.alert_status);
                 var alertStatus = data.alert_status;
                 var statusDiv = $(".alert-status-div");
                 statusDiv.removeClass("text-red text-green");
@@ -246,6 +279,8 @@ $(document).ready(function(){
         });
     }
 </script>
+
+
 
             {% endif %}
           </div>

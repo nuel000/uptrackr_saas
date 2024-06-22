@@ -1,0 +1,13 @@
+2024-06-14 12:51:59,830 - ERROR - Failed to fetch XML data: 429 Client Error: Too Many Requests for url: https://www.upwork.com/ab/feed/topics/rss?securityToken=4cf203eca72f683aa01c097405ce9c35485c029e0479628a1ae88efce562937e9e6060643946dbae5ad3670b3cc1711b9061d62433de8ee5fcc00dea15716d10&userUid=1252216643715940352&orgUid=1252216643724328961
+2024-06-14 12:51:59,831 - INFO - Failed to fetch or parse XML data.
+2024-06-14 12:53:59,941 - ERROR - Failed to fetch XML data: 429 Client Error: Too Many Requests for url: https://www.upwork.com/ab/feed/topics/rss?securityToken=4cf203eca72f683aa01c097405ce9c35485c029e0479628a1ae88efce562937e9e6060643946dbae5ad3670b3cc1711b9061d62433de8ee5fcc00dea15716d10&userUid=1252216643715940352&orgUid=1252216643724328961
+2024-06-14 12:53:59,941 - INFO - Failed to fetch or parse XML data.
+2024-06-14 12:54:56,952 - INFO - Script stopped
+2024-06-14 12:57:32,121 - ERROR - Failed to send email: (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://support.google.com/mail/?p=BadCredentials d75a77b69052e-441ef3d85e8sm15865631cf.2 - gsmtp')
+2024-06-14 12:57:32,122 - INFO - Sent email for job: Job Title: Web Developer Needed for Quick and Easy User Feedback Platform
+ - Upwork
+2024-06-14 12:58:52,137 - INFO - Script stopped
+2024-06-14 13:06:43,482 - ERROR - Failed to send email: (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://support.google.com/mail/?p=BadCredentials af79cd13be357-798aacae71esm142548185a.17 - gsmtp')
+2024-06-14 13:06:43,483 - INFO - Sent email for job: React Native Developer  - Upwork
+2024-06-14 13:08:45,010 - ERROR - Failed to send email: (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://support.google.com/mail/?p=BadCredentials 6a1803df08f44-6b2a5ed9096sm17765576d6.104 - gsmtp')
+2024-06-14 13:08:45,010 - INFO - Sent email for job: Reverse Engineer - Upwork

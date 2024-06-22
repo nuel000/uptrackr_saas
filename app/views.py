@@ -38,16 +38,15 @@ from django.http import HttpResponseForbidden
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
-from dotenv import load_dotenv
 import os
 import hashlib
 import hmac
 import subprocess
 from django.http import JsonResponse
 from .models import RssDetails  
+import psutil
+from .process_manager import ProcessManager
 
-
-load_dotenv()
 terminate_signal = Event()
 job_thread = None
 SECRET_KEY = "Iamapythondeveloper4real22"
@@ -81,69 +80,65 @@ def run_job(email, rss_url):
         job(email, rss_url)
         time.sleep(2)
         
-# def terminate_process(user):
-#     if user.username in processes:
-#         process = processes[user.username]
-#         print(f"Terminating process for user: {user.username}, PID: {process.pid}")
-#         try:
-#             process.send_signal(signal.SIGTERM)
-#             process.wait(timeout=5)
-#             del processes[user.username]
-#             print(f"Process terminated successfully for user: {user.username}")
-#             return True
-#         except subprocess.TimeoutExpired:
-#             print(f"Process timed out for user: {user.username}, force killing...")
-#             process.kill()
-#             del processes[user.username]
-#             return False
-#     else:
-#         return False
-    
-    
-    
-# def check_subscription_and_terminate():
-#     users = User.objects.all()
-#     for user in users:
-#         subscribed_user = SubscriptionPayment.objects.filter(user_name=user).first()
-#         trial_user = FreeTrialUser.objects.filter(user=user).first()
-#         if trial_user:
-#             if trial_user.start_date + timedelta(days=7) <= timezone.now():
-#                 terminate_process_success = terminate_process(user)
-#                 if terminate_process_success:
-#                     print(f"Process terminated successfully for user: {user.username}")
-#                 else:
-#                     pass
-     
-#         if subscribed_user:
-#             if subscribed_user.total_formatted == '$5.00':
-#                 if subscribed_user.created_at + timedelta(days=29) <= timezone.now():
-#                     terminate_process_success = terminate_process(user)
-#                     if terminate_process_success:
-#                         print(f"Process terminated successfully for user: {user.username}")
-#                     else:
-#                         pass
-#             elif subscribed_user.total_formatted == '$48.00':
-#                 if subscribed_user.created_at + timedelta(days=364) <= timezone.now():
-#                     terminate_process_success = terminate_process(user)
-#                     if terminate_process_success:
-#                         print(f"Process terminated successfully for user: {user.username}")
-#                     else:
-#                         pass
 
-# def periodic_subscription_check():
-#     while True:
-#         check_subscription_and_terminate()
-#         time.sleep(1)  # Wait for 1 minute before checking again
+def terminate_process(user):
+    if ProcessManager.process is not None and ProcessManager.process.poll() is None:
+        print(f"Terminating process for user: {user.username}, PID: {ProcessManager.process.pid}")
+        try:
+            ProcessManager.stop_process()
+            print(f"Process terminated successfully for user: {user.username}")
+            return True
+        except subprocess.TimeoutExpired:
+            print(f"Process timed out for user: {user.username}, force killing...")
+            ProcessManager.process.kill()
+            ProcessManager.process = None
+            return False
+    else:
+        return False
 
-# # Start the background thread when the Django server starts up
-# thread = threading.Thread(target=periodic_subscription_check)
-# thread.start()
+def check_subscription_and_terminate():
+    users = User.objects.all()
+    for user in users:
+        subscribed_user = SubscriptionPayment.objects.filter(user_name=user).first()
+        trial_user = FreeTrialUser.objects.filter(user=user).first()
+        if trial_user:
+            if trial_user.start_date + timedelta(days=7) <= timezone.now():
+                terminate_process_success = terminate_process(user)
+                if terminate_process_success:
+                    print(f"Process terminated successfully for user: {user.username}")
+                else:
+                    pass
+
+        if subscribed_user:
+            if subscribed_user.total_formatted == '$5.00':
+                if subscribed_user.created_at + timedelta(days=29) <= timezone.now():
+                    terminate_process_success = terminate_process(user)
+                    if terminate_process_success:
+                        print(f"Process terminated successfully for user: {user.username}")
+                    else:
+                        pass
+            elif subscribed_user.total_formatted == '$48.00':
+                if subscribed_user.created_at + timedelta(days=364) <= timezone.now():
+                    terminate_process_success = terminate_process(user)
+                    if terminate_process_success:
+                        print(f"Process terminated successfully for user: {user.username}")
+                    else:
+                        pass
+
+def periodic_subscription_check():
+    while True:
+        check_subscription_and_terminate()
+        time.sleep(300)  # Wait for 1 minute before checking again
+
+# Start the background thread when the Django server starts up
+thread = threading.Thread(target=periodic_subscription_check)
+thread.start()
+
 
         
 # pricing
 @login_required
 def pricing_page(request):
-    global terminate_signal
     user = request.user
     month_sub_on = False
     year_sub_on = False
@@ -153,86 +148,86 @@ def pricing_page(request):
     if trial_user:
         if trial_user.start_date + timedelta(days=7) <= timezone.now():
             trial_message = 'Your free trial has expired. Please subscribe to continue.'
-            # terminate_process_success = terminate_process(user)
-            # if terminate_process_success:
-            #     print(f"Process terminated successfully for user: {user.username}")
-            # else:
-            #     print(f"Failed to terminate process for user: {user.username}")
+            terminate_process_success = terminate_process(user)
+            if terminate_process_success:
+                print(f"Process terminated successfully for user: {user.username}")
+            else:
+                print(f"Failed to terminate process for user: {user.username}")
         else:
             trial_message = 'Your free trial is already active. Please go back to <a href="dashboard">dashboard</a> to see your stats.'
     else:
         trial_message = None
 
-       
     # Check if the user already has a subscription
     subscribed_user = SubscriptionPayment.objects.filter(user_name=user).first()
     if subscribed_user:
         if subscribed_user.total_formatted == '$5.00':
             if subscribed_user.created_at + timedelta(days=29) <= timezone.now():
                 sub_message = 'Your monthly subscription has expired. Please wait for your subscription to autorenew to continue or click the button below to re-subscribe.'
-                if user.username in processes:
-                    process = processes[user.username]
-                    process.send_signal(signal.SIGTERM)  # Send termination signal
-                    process.wait()  # Wait for the process to terminate
-                    del processes[user.username]  # Remove from the process dictionary
- 
+                terminate_process(user)
             else:
                 month_sub_on = True
         elif subscribed_user.total_formatted == '$48.00':
             if subscribed_user.created_at + timedelta(days=364) <= timezone.now():
                 year_sub_message = 'Your annual subscription has expired. Please wait for your subscription to autorenew to continue or click the button below to re-subscribe.'
-                if user.username in processes:
-                    process = processes[user.username]
-                    process.send_signal(signal.SIGTERM)  # Send termination signal
-                    process.wait()  # Wait for the process to terminate
-                    del processes[user.username]  # Remove from the process dictionary
-                    
+                terminate_process(user)
             else:
                 year_sub_on = True
-   
 
     if request.method == 'POST':
         if 'plan' in request.POST:
             plan = request.POST['plan']
             if plan == 'free':
-                return redirect('alert')  
+                return redirect('alert')
             elif plan == 'monthly':
                 user_name = request.user.username
-                variant_id ='47d5f5f4-eb8d-4872-b460-9800e8c29df8'
+                variant_id = '47d5f5f4-eb8d-4872-b460-9800e8c29df8'
                 checkout_url = f'https://uptrackr.lemonsqueezy.com/checkout/buy/{variant_id}?checkout[custom][user_name]={user_name}'
-                return redirect(checkout_url)                
+                return redirect(checkout_url)
             elif plan == 'annual':
                 user_name = request.user.username
                 variant_id = 'a0a4ae4e-aabf-4cb2-b1f5-b1324ebab37b'  # Adjust this to your actual variant ID
                 checkout_url = f'https://uptrackr.lemonsqueezy.com/checkout/buy/{variant_id}?checkout[custom][user_name]={user_name}'
                 return redirect(checkout_url)
-            
-    return render(request, 'pricing.html', {'trial_message': trial_message,'month_sub_on': month_sub_on,'year_sub_on':year_sub_on, 'sub_message': sub_message,'year_sub_message':year_sub_message})
 
+    return render(request, 'pricing.html', {'trial_message': trial_message, 'month_sub_on': month_sub_on, 'year_sub_on': year_sub_on, 'sub_message': sub_message, 'year_sub_message': year_sub_message})
 
 processes = {}
+
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+from .process_manager import ProcessManager
 
 def start_script(request):
     user = request.user
     rss_user = RssDetails.objects.filter(user=user).first()
     if rss_user:
-        process = subprocess.Popen(['python', r'main\main.py', rss_user.email, rss_user.rss_url])
-        processes[user.username] = process
-        return JsonResponse({'message': 'Alert started', 'pid': process.pid})
+        pid = ProcessManager.start_process(user, rss_user)
+        if pid is not None:
+            return JsonResponse({'message': 'Alert started', 'pid': pid})
+        else:
+            return JsonResponse({'message': 'Alert is already running'})
     else:
         return JsonResponse({'error': 'RSS details not found for user'}, status=404)
 
 def stop_script(request):
     user = request.user
-    if user.username in processes:
-        process = processes[user.username]
-        process.send_signal(signal.SIGTERM)
-        process.send_signal(signal.SIGTERM)
-        process.wait()  # Wait for the process to terminate
-        del processes[user.username]
+    if ProcessManager.stop_process():
         return JsonResponse({'message': 'Alert stopped'})
     else:
         return JsonResponse({'error': 'No script is running for this user'}, status=404)
+
+
+
+
+
+
+
+
+
 
     
 # Webhook to get data from lemon squeezy
@@ -333,16 +328,13 @@ def webhook_callback(request):
         # If the request method is not POST, respond with a method not allowed status code
         return JsonResponse({'error': 'Method not allowed'}, status=405)
 
+
+
 @csrf_exempt
 def cancel_subscription(request):
     if request.method == 'POST':
         user = request.user  # Make sure this adjusts based on your user authentication setup
-        if user.username in processes:
-            process = processes[user.username]
-            process.send_signal(signal.SIGTERM)  # Send termination signal
-            process.wait()  # Wait for the process to terminate
-            del processes[user.username]
-            return JsonResponse({'message': 'Script stopped'})
+        terminate_process(user)
         subscribed_user = SubscriptionPayment.objects.filter(user_name=user).first()
         if subscribed_user:
             print('SUB_ID is ,', subscribed_user.subscription_id)
@@ -361,7 +353,7 @@ def cancel_subscription(request):
                     status='cancelled',
                     expiration_date=subscribed_user.expiration_date)
 
-                cancelled_subscription.save() 
+                cancelled_subscription.save()
                 # Delete from SubscriptionPayment
                 subscribed_user.delete()
 
@@ -373,6 +365,7 @@ def cancel_subscription(request):
 
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+
 
 
 # Sign Up
@@ -634,72 +627,77 @@ def display_html(request):
     sub_status = None
     sub_end_date = None
     expiration_date_passed = None
-    alert_status = None
+    alert_status = 'OFF'  # Set the default alert status to 'OFF'
     user = request.user
-    if user.username in processes:
+
+    # Check if a process is running
+    if ProcessManager.process is not None and ProcessManager.process.poll() is None:
         alert_status = 'ON'
-    else:
-        alert_status = 'OFF'
+
     subscribed_user = SubscriptionPayment.objects.filter(user_name=user).first()
     cancelled_user = CancelledSubscription.objects.filter(user_name=user).first()
     trial_user = FreeTrialUser.objects.filter(user=user).first()
-  
+
     if subscribed_user:
-        if subscribed_user.total_formatted == '$5.00' and subscribed_user.expiration_date<= timezone.now():
-            stop_script(request)
+        if subscribed_user.total_formatted == '$5.00' and subscribed_user.expiration_date <= timezone.now():
+            ProcessManager.stop_process()
             sub_status = 'OFF'
             sub_end_date = subscribed_user.expiration_date
-        elif subscribed_user.total_formatted == '$48.00' and subscribed_user.expiration_date<= timezone.now():
-            stop_script(request)
+        elif subscribed_user.total_formatted == '$48.00' and subscribed_user.expiration_date <= timezone.now():
+            ProcessManager.stop_process()
             sub_status = 'OFF'
             sub_end_date = subscribed_user.expiration_date
         else:
             sub_status = 'ON'
             sub_end_date = subscribed_user.expiration_date
     elif cancelled_user:
-        if cancelled_user.expiration_date<= timezone.now():
+        if cancelled_user.expiration_date <= timezone.now():
             sub_status = 'Cancelled and Expired'
             expiration_date_passed = True
             cancelled_user.delete()
-            
         else:
             sub_status = 'Cancelled Not Expired'
             expiration_date_passed = False
-            
     elif trial_user:
         if trial_user.start_date + timedelta(days=7) <= timezone.now():
-            stop_script(request)
+            ProcessManager.stop_process()
             print('Script has been stopped')
             sub_status = 'Free Trial Expired'
         else:
             sub_status = 'Your free trial is already active.'
-        
     else:
         sub_status = 'User Not Subscribed'
         sub_end_date = 'None'
-    
-        
 
     context = {
         'username': user.username,
         'email': user.email,
         'joining_date': user.date_joined,
-        'subscription_status':sub_status,
-        'subscription_expiration_date':sub_end_date,
-        'expiration_date':expiration_date_passed,
+        'subscription_status': sub_status,
+        'subscription_expiration_date': sub_end_date,
+        'expiration_date': expiration_date_passed,
         'button_label': 'Start Alert',
-        'alert_status':alert_status}
+        'alert_status': alert_status
+    }
     return render(request, 'dashboard.html', context)
+
+
+
+
+
+
+
+
 
 @login_required
 def get_alert_status(request):
-    user = request.user
-    alert_status = 'OFF'
-    if user.username in processes:
+    print("get_alert_status called")
+    if ProcessManager.process is not None and ProcessManager.process.poll() is None:
         alert_status = 'ON'
-
+    else:
+        alert_status = 'OFF'
+    print(f"Returning alert_status: {alert_status}")
     return JsonResponse({'alert_status': alert_status})
-
 
 
 

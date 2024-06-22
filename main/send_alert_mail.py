@@ -9,10 +9,10 @@ import uuid
 # Load environment variables from .env file
 load_dotenv()
 # email_password = os.environ.get("MY_PASSWORD")
-email_password = "iybw apas orcf mdmm"
+email_password = "moca yzvv vyaw synx"
 
 def send_mail(email_receiver, body):
-    email_sender = 'thedatadude000@gmail.com'
+    email_sender = 'alerts@uptrackr.co'
     receiver_name = 'UpTrackr'  
 
     # Generate a unique identifier for the email subject

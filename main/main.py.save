@@ -1,0 +1,584 @@
+{% extends 'base.html' %} {% load static %} {% block title %} Pricing Plans {% endblock %} {% block content %}
+
+
+<div class="container" style="text-align: center;">
+  <div class="section">
+    <h2>Profile Overview</h2>
+    <div class="container">
+      <!-- Container to hold all plans side by side -->
+      <div class="profile-container">
+        <div class="plan">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <p>USERNAME:</p>
+            <div style="flex-grow: 1; text-align: center;"><b>{{ username }}</b></div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <p>ALERT STATUS:</p>
+            <div class="alert-status-div" style="flex-grow: 1; text-align: center;"></div>
+        </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <p>EMAIL:</p>
+            <div style="flex-grow: 1; text-align: center;"><b>{{ email }}</b></div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <p>DATE JOINED:</p>
+            <div style="flex-grow: 1; text-align: center;"><b>{{ joining_date }}</b></div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <p style="margin-right: 10px;">SUB STATUS:</p>
+            <div style="flex-grow: 1; text-align: center;">
+              {% if subscription_status == 'OFF' or subscription_status == 'Free Trial Expired' or subscription_status == 'Cancelled and Expired' or subscription_status == 'Cancelled Not Expired' %}
+                <span style="color: red;"><b>{{ subscription_status }}</b></span>
+              {% elif subscription_status == 'ON' or subscription_status == 'Your free trial is already active.' %}
+                <span style="color: green;"><b>{{ subscription_status }}</b></span>
+
+              {% else %}
+                {{ subscription_status }}
+              {% endif %}
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <p>SUB EXP.DATE:</p>
+            <div style="flex-grow: 1; text-align: center;"><b>{{ subscription_expiration_date|default:"N/A" }}</b></div>
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: center; margin-top: 20px;">
+            {% if subscription_status == 'OFF' or subscription_status == 'Free Trial Expired' %}
+              <form action="{% url 'pricing' %}" method="get" style="width: 100%; margin-bottom: 10px;">
+                {% csrf_token %}
+                <input type="submit" class="custom-button subscribe-button" style="width: 100%;" value="RENEW SUBSCRIPTION" />
+              </form>
+            {% elif subscription_status == 'Cancelled and Expired' %}
+              <form action="{% url 'pricing' %}" method="get" style="width: 100%; margin-bottom: 10px;">
+                {% csrf_token %}
+                <input type="submit" class="custom-button subscribe-button" style="width: 100%;" value="RENEW SUBSCRIPTION" />
+              </form>
+            {% elif subscription_status == 'Cancelled Not Expired' %}
+              <button id="startButton" class="custom-button greenButton" style="margin-bottom: 10px;">Start Script</button>
+              <button id="stopButton" class="custom-button redButton" style="margin-bottom: 10px; background-color: red;">Stop Script</button>
+              <p id="message" style="margin-bottom: 10px;"></p>
+              <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+              <script>
+              $(document).ready(function() {
+                  $("#startButton").click(function() {
+                      $.ajax({
+                          url: '/start/',
+                          type: 'GET',
+                          success: function(response) {
+                              $("#message").text("Started: " + response.message);
+                              updateAlertStatus(); // Update alert status after starting the script
+                          },
+                          error: function() {
+                              $("#message").text("Error starting the script.");
+                          }
+                      });
+                  });
+
+                  $("#stopButton").click(function() {
+                      $.ajax({
+                          url: '/stop/',
+                          type: 'GET',
+                          success: function(response) {
+                              $("#message").text("Stopped: " + response.message);
+                              updateAlertStatus(); // Update alert status after stopping the script
+                          },
+                          error: function() {
+                              $("#message").text("Error stopping the script.");
+                          }
+                      });
+                  });
+              });
+              </script>
+            {% elif subscription_status == 'ON' %}
+              <button id="cancelSubscriptionButton" class="custom-button" style="background-color: rgb(31, 31, 29); margin-bottom: 10px;" onclick="cancelSubscription()">Cancel Subscription</button>
+              <button id="startButton" class="custom-button greenButton" style="margin-bottom: 10px;">Start Script</button>
+              <button id="stopButton" class="custom-button redButton" style="margin-bottom: 10px; background-color: red;">Stop Script</button>
+              <p id="message" style="margin-bottom: 10px;"></p>
+              <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+              <script>
+              $(document).ready(function() {
+                  $("#startButton").click(function() {
+                      $.ajax({
+                          url: '/start/',
+                          type: 'GET',
+                          success: function(response) {
+                              $("#message").text("Started: " + response.message);
+                              updateAlertStatus(); // Update alert status after starting the script
+                          },
+                          error: function() {
+                              $("#message").text("Error starting the script.");
+                          }
+                      });
+                  });
+
+                  $("#stopButton").click(function() {
+                      $.ajax({
+                          url: '/stop/',
+                          type: 'GET',
+                          success: function(response) {
+                              $("#message").text("Stopped: " + response.message);
+                              updateAlertStatus(); // Update alert status after stopping the script
+                          },
+                          error: function() {
+                              $("#message").text("Error stopping the script.");
+                          }
+                      });
+                  });
+              });
+              </script>
+          
+              <script>
+                  function cancelSubscription() {
+                      fetch("{% url 'cancel-subscription' %}", {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          'X-CSRFToken': getCookie('csrftoken')
+                        }
+                      }).then(response => response.json())
+                        .then(data => {
+                          alert(data.message);
+                        })
+                        .catch(error => console.error('Error:', error));
+                    }
+          
+                    function getCookie(name) {
+                      let cookieValue = null;
+                      if (document.cookie && document.cookie !== '') {
+                        const cookies = document.cookie.split(';');
+                        for (let i = 0; i < cookies.length; i++) {
+                          const cookie = cookies[i].trim();
+                          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                          }
+                        }
+                      }
+                      return cookieValue;
+                    }
+              </script>
+
+{% elif subscription_status == 'Your free trial is already active.' %}
+<button id="startButton" class="custom-button greenButton" style="margin-bottom: 10px;">Start Script</button>
+<button id="stopButton" class="custom-button redButton" style="margin-bottom: 10px; background-color: red;">Stop Script</button>
+<p id="message" style="margin-bottom: 10px;"></p>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+$(document).ready(function() {
+    $("#startButton").click(function() {
+        $.ajax({
+            url: '/start/',
+            type: 'GET',
+            success: function(response) {
+                $("#message").text("Started: " + response.message);
+                updateAlertStatus(); // Update alert status after starting the script
+            },
+            error: function() {
+                $("#message").text("Error starting the script.");
+            }
+        });
+    });
+
+    $("#stopButton").click(function() {
+        $.ajax({
+            url: '/stop/',
+            type: 'GET',
+            success: function(response) {
+                $("#message").text("Stopped: " + response.message);
+                updateAlertStatus(); // Update alert status after stopping the script
+            },
+            error: function() {
+                $("#message").text("Error stopping the script.");
+            }
+        });
+    });
+});
+</script>
+
+<script>
+    function cancelSubscription() {
+        fetch("{% url 'cancel-subscription' %}", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+          }
+        }).then(response => response.json())
+          .then(data => {
+            alert(data.message);
+          })
+          .catch(error => console.error('Error:', error));
+      }
+
+      function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+</script>
+
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script>
+    // $(document).ready(function() {
+    //     setInterval(updateAlertStatus, 5000); // Update alert status every 5 seconds
+    // });
+
+    function updateAlertStatus() {
+        $.ajax({
+            url: "{% url 'get_alert_status' %}",
+            type: "GET",
+            dataType: "json",
+            success: function(data) {
+                var alertStatus = data.alert_status;
+                var statusDiv = $(".alert-status-div");
+                statusDiv.removeClass("text-red text-green");
+                if (alertStatus === "OFF") {
+                    statusDiv.addClass("text-red").html("<b>" + alertStatus + "</b>");
+                } else {
+                    statusDiv.addClass("text-green").html("<b>" + alertStatus + "</b>");
+                }
+            },
+            error: function() {
+                console.log("Error fetching alert status.");
+            }
+        });
+    }
+</script>
+
+            {% endif %}
+          </div>
+          </div>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+
+.text-red {
+    color: red;
+}
+
+.text-green {
+    color: green;
+}
+
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.greenButton {
+    background-color: green;
+    color: white;
+    display: inline-block;
+    width: 200px;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    text-align: center;
+    margin-right: 5px; /* Ensures space between buttons */
+    /* Add any additional styling you want */
+}
+
+.redButton {
+    background-color: red;
+    color: white;
+    display: inline-block;
+    width: 200px;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    text-align: center;
+    margin-right: 5px;
+    /* Add any additional styling you want */
+}
+
+#alertButton {
+        font-size: 40px;
+        padding: 20px 40px;
+        border: none;
+        border-radius: 15px;  /* Gives the button smooth rounded corners */
+        color: white;         /* Sets the text color to white */
+        cursor: pointer;
+        transition: background-color 0.3s; /* Smooth transition for background color change */
+    }
+  .profile-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .plan {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1 1 300px;
+    margin-bottom: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: white;
+  }
+  .plan-form {
+    margin-top: auto;
+  }
+  .custom-button {
+    display: inline-block;
+    width: 200px;
+    padding: 10px 20px;
+    background-color: #17a17b;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    text-align: center;
+  }
+  .stop-alert-button {
+    background-color: #ffa500; /* Orange */
+  }
+  .subscribe-button:hover {
+    background-color: #17a17b;
+  }
+
+  .custom-button {
+    display: inline-block;
+    width: 200px;
+    padding: 10px 20px;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    text-align: center;
+    margin-right: 5px; /* Ensures space between buttons */
+  }
+  .custom-button:last-child {
+    margin-right: 0; /* Removes margin for the last button */
+  }
+
+  @media (max-width: 768px) {
+  .plan {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .plan p {
+    margin-bottom: 5px;
+  }
+
+  .custom-button {
+    width: 100%;
+    margin: 10px 0; /* Add margin top and bottom for spacing */
+    box-sizing: border-box; /* Include padding and border in the element's width */
+  }
+}
+
+</style>
+{% endblock %}# MAIN CODE
+import re
+import html
+import schedule
+import time
+import xml.etree.ElementTree as ET
+import requests
+import sys
+import signal
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import ssl
+import smtplib
+import os
+from dotenv import load_dotenv
+import uuid
+import logging
+
+# Load environment variables from .env file
+load_dotenv()
+email_password = os.environ.get("MY_PASSWORD", "default_password")
+
+# Configure logging
+logging.basicConfig(filename='app.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+def send_mail(email_receiver, body):
+    email_sender = 'thedatadude000@gmail.com'
+    receiver_name = 'UpTrackr'  
+
+    # Generate a unique identifier for the email subject
+    email_subject = f'New Upwork Gig Alert - [{str(uuid.uuid4())[:8]}]'
+
+    msg = MIMEMultipart('alternative')
+    msg['From'] = f'{receiver_name} <{email_sender}>'
+    msg['To'] = email_receiver
+    msg['Subject'] = email_subject
+
+    html_body = MIMEText(body, 'html')
+
+    msg.attach(html_body)
+
+    context = ssl.create_default_context()
+    try:
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
+            smtp.login(email_sender, email_password)
+            smtp.sendmail(email_sender, email_receiver, msg.as_string())
+    except Exception as e:
+        logging.error(f"Failed to send email: {e}")
+
+def format_description(text):
+    new = re.sub('<.*?>', '', text)
+    pattern = r'Posted On: [^<]+'
+    pattern2 = r'\s?(Hourly Range: \$\d+\.\d+-\$\d+\.\d+|Budget: \$\d+)\s*$'
+    cleaned_text = re.sub(pattern, '', new)
+    new_cleaned = re.sub(pattern2, '', cleaned_text)
+    cleaned_text = html.unescape(new_cleaned)
+
+    return cleaned_text
+
+# Set to store unique job IDs
+processed_job_ids = []
+
+def fetch_xml_data(rss):
+    try:
+        response = requests.get(rss)
+        response.raise_for_status()
+        return response.text
+    except requests.RequestException as e:
+        logging.error(f"Failed to fetch XML data: {e}")
+        return None
+
+def parse_xml(xml_data):
+    try:
+        root = ET.fromstring(xml_data)
+    except ET.ParseError as e:
+        logging.error(f"Failed to parse XML data: {e}")
+        return []
+
+    jobs = []
+
+    for item in root.findall('.//item'):
+        job = {
+            'title': html.unescape(item.find('title').text.strip()),
+            'link': item.find('link').text.strip(),
+            'description': item.find('description').text.strip(),
+            'job_id': item.find('guid').text.strip()
+        }
+
+        if job['job_id'] in processed_job_ids:
+            continue
+
+        additional_details = item.find('description').text.strip().split('<br />')
+        for detail in additional_details:
+            if 'Posted On' in detail:
+                job['posted_on'] = detail.split(': ')[1] if len(detail.split(': ')) > 1 else ''
+            elif 'Category' in detail:
+                job['category'] = detail.split(': ')[1] if len(detail.split(': ')) > 1 else ''
+            elif 'Country' in detail:
+                job['country'] = detail.split(': ')[1] if len(detail.split(': ')) > 1 else ''
+            elif 'Budget' in detail:
+                job['budget'] = detail.split(': ')[1] if len(detail.split(': ')) > 1 else ''
+            elif 'Hourly Range' in detail:
+                job['rate'] = detail.split(': ')[1] + " hourly" if len(detail.split(': ')) > 1 else ''
+            else:
+                job['non'] = 'Hourly, Not Specified'
+
+        processed_job_ids.append(job['job_id'])
+
+        if len(processed_job_ids) > 100:
+            processed_job_ids.pop(0)
+
+        jobs.append(job)
+
+    return jobs
+
+prev_job = {}
+
+def get_budget(job):
+    return job.get('budget') or job.get('rate') or job.get('non') or "Not specified"
+
+def job(email, rss_url):
+    global prev_job
+
+    xml_data = fetch_xml_data(rss_url)
+    if xml_data:
+        jobs = parse_xml(xml_data)
+        if jobs:
+            new_job = jobs[0]
+            if new_job != prev_job:
+                client_country = new_job.get('country', 'None Specified')
+
+                body = f"""
+                <html>
+                    <body>
+                    
+                    <b>Hi there, New Gig Available on Upwork, checkout details below 👇.</b>
+                    
+                    <br>
+                    <br>
+
+                    <b>Title</b>: {new_job['title']}<br>
+                    <br>
+                    <b>Description</b>: {format_description(new_job['description'])}<br>
+                    <br>
+                    <b>Posted On</b>: {new_job.get('posted_on', 'Not specified')}<br>
+                    <br>
+                    <b>Category</b>: {new_job.get('category', 'Not specified')}<br>
+                    <br>
+                    <b>Budget</b>: {get_budget(new_job)}<br>
+                    <br>
+                    <b>Client Country</b>: {client_country}<br>
+                    <br>
+                    <b>APPLY HERE</b>: <a href="{new_job['link']}">Link to Apply</a><br>
+                    <br>
+                    <br>
+                    <br>
+                    <b> Keep Winning!! 💪</b>
+                    <br>
+                    <br>
+                    Uptrackr Team.
+                    </body>
+                </html>
+                """
+                body = '\n'.join(line.strip() for line in body.split('\n'))              
+                send_mail(email, body)
+                prev_job = new_job
+                logging.info(f"Sent email for job: {new_job['title']}")
+            else:
+                logging.info("No new jobs found.")
+        else:
+            logging.info("No jobs found in the XML data.")
+    else:
+        logging.info("Failed to fetch or parse XML data.")
+
+def main(email, rss_url):
+    running = True
+
+    def signal_handler(signum, frame):
+        nonlocal running
+        running = False
+
+    signal.signal(signal.SIGTERM, signal_handler)
+
+    # Schedule job to run every 10 minutes
+    schedule.every(2).minutes.do(job, email, rss_url)
+
+    while running:
+        schedule.run_pending()
+        time.sleep(1)  # Sleep to prevent high CPU usage
+    logging.info('Script stopped')
+
+if __name__ == '__main__':
+    email = sys.argv[1]
+    rss_url = sys.argv[2]
+    main(email, rss_url)
+
