@@ -261,6 +261,7 @@ def webhook_callback(request):
             try:
                 # Parse the JSON payload
                 payload = json.loads(request.body)
+                print(f'payload....:::::::::::{payload}')
                 meta_data = payload['meta']
                 event_name = payload['meta']['event_name']
                 external_list.append(meta_data)
@@ -274,7 +275,7 @@ def webhook_callback(request):
                     
                 if event_name == 'subscription_payment_success':
                     if subscription_id is None:
-                        print('Non')
+                        print('Noneeee')
                     else:
                         print(subscription_id)
                     custom_data = payload['meta']['custom_data']
