@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path,include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    url(r'getthefuckout/', include(admin.site.urls)),
     path('', include('app.urls')),
     # path('countries/', include('django_countries.urls')),
 ]
