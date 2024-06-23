@@ -59,45 +59,77 @@
               <p id="message" style="margin-bottom: 10px;"></p>
               <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
               <script>
-              $(document).ready(function() {
-
-              // Start button click event
-              $("#startButton").click(function() {
-                  // Display the loading message
-                  $("#message").text("Starting Script...");
-          
-                  $.ajax({
-                      url: '/start/',
-                      type: 'GET',
-                      success: function(response) {
-                          $("#message").text("Started: " + response.message);
-                          updateAlertStatus(); // Update alert status after starting the script
-                      },
-                      error: function() {
-                          $("#message").text("Error starting the script.");
-                      }
+                  $(document).ready(function() {
+                      // Start button click event
+                      $("#startButton").click(function() {
+                          // Display the loading message
+                          $("#message").text("Starting Script...");
+              
+                          $.ajax({
+                              url: '/start/',
+                              type: 'GET',
+                              success: function(response) {
+                                  $("#message").text("Started: " + response.message);
+                                  updateAlertStatus(); // Update alert status after starting the script
+                              },
+                              error: function() {
+                                  $("#message").text("Error starting the script.");
+                              }
+                          });
+                      });
+              
+                      // Stop button click event
+                      $("#stopButton").click(function() {
+                          // Display the loading message
+                          $("#message").text("Stopping Script. Please wait...");
+              
+                          $.ajax({
+                              url: '/stop/',
+                              type: 'GET',
+                              success: function(response) {
+                                  $("#message").text("Stopped: " + response.message);
+                                  updateAlertStatus(); // Update alert status after stopping the script
+                              },
+                              error: function() {
+                                  $("#message").text("Error stopping the script.");
+                              }
+                          });
+                      });
+              
+                      // Update alert status on page load
+                      updateAlertStatus();
                   });
-              });
-          
-              // Stop button click event
-              $("#stopButton").click(function() {
-                  // Display the loading message
-                  $("#message").text("Stopping Script. Please wait...");
-          
-                  $.ajax({
-                      url: '/stop/',
-                      type: 'GET',
-                      success: function(response) {
-                          $("#message").text("Stopped: " + response.message);
-                          updateAlertStatus(); // Update alert status after stopping the script
-                      },
-                      error: function() {
-                          $("#message").text("Error stopping the script.");
+              </script>
+              <script>
+                  function cancelSubscription() {
+                      fetch("{% url 'cancel-subscription' %}", {
+                          method: 'POST',
+                          headers: {
+                              'Content-Type': 'application/json',
+                              'X-CSRFToken': getCookie('csrftoken')
+                          }
+                      }).then(response => response.json())
+                        .then(data => {
+                          alert(data.message);
+                        })
+                        .catch(error => console.error('Error:', error));
+                  }
+              
+                  function getCookie(name) {
+                      let cookieValue = null;
+                      if (document.cookie && document.cookie !== '') {
+                          const cookies = document.cookie.split(';');
+                          for (let i = 0; i < cookies.length; i++) {
+                              const cookie = cookies[i].trim();
+                              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                  break;
+                              }
+                          }
                       }
-                  });
-              });
-          
-
+                      return cookieValue;
+                  }
+              </script>
               <script src="{% static 'js/jquery.min.js' %}"></script>
               <script>
                   function updateAlertStatus() {
