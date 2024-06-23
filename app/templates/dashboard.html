@@ -110,9 +110,13 @@
                           }
                       }).then(response => response.json())
                         .then(data => {
-                          alert(data.message);
-                        })
-                        .catch(error => console.error('Error:', error));
+                        alert(data.message);
+                        $("#message").text(data.message); // Update the message element with the server response
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        $("#message").text('Error canceling the subscription.'); // Display an error message
+                    });
                   }
               
                   function getCookie(name) {
@@ -224,9 +228,13 @@
                           }
                       }).then(response => response.json())
                         .then(data => {
-                          alert(data.message);
-                        })
-                        .catch(error => console.error('Error:', error));
+                        alert(data.message);
+                        $("#message").text(data.message); // Update the message element with the server response
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        $("#message").text('Error canceling the subscription.'); // Display an error message
+                    });
                   }
               
                   function getCookie(name) {
