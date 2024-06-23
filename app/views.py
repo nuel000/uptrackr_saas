@@ -253,7 +253,9 @@ def webhook_callback(request):
         # Compare the calculated digest with the received signature
         if hmac.compare_digest(digest, signature):
             print('Compare was correct')
-            print(payload = json.loads(request.body))
+            payload = json.loads(request.body)
+            print('PAY LOADDDD ISSSS')
+            print(payload)
             # If the signatures match, process the webhook payload
             
             try:
@@ -330,12 +332,15 @@ def webhook_callback(request):
 
             except json.JSONDecodeError:
                 # If the payload is not valid JSON, respond with a bad request status code
+                print('400 ERROR........')
                 return JsonResponse({'error': 'Invalid JSON payload'}, status=400)
         else:
             # If the signatures don't match, respond with an unauthorized status code
+            print('401 ERROR........')
             return JsonResponse({'error': 'Invalid signature'}, status=401)
     else:
         # If the request method is not POST, respond with a method not allowed status code
+        print('405 ERROR........')
         return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 
