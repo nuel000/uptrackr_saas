@@ -274,29 +274,30 @@ def webhook_callback(request):
                         break
                     
                 if event_name == 'subscription_payment_success':
-                    if subscription_id is None:
-                        print('Noneeee')
-                    else:
-                        print(subscription_id)
                     custom_data = payload['meta']['custom_data']
                     user_name = custom_data['user_name']
-                    created_at = datetime.strptime(payload['data']['attributes']['created_at'], '%Y-%m-%dT%H:%M:%S.%fZ')
+                    subscription_id = payload['data']['attributes']['subscription_id']
+                    sub_ids.append(subscription_id)
+                    print('SUB IDS....',sub_ids)
+                    created_at_str = payload['data']['attributes']['created_at']
+                    created_at = datetime.strptime(created_at_str, '%Y-%m-%dT%H:%M:%S.%fZ')
                     total_formatted = payload['data']['attributes']['total_formatted']
                     status = payload['data']['attributes']['status']
+                    
                     # Calculate expiration date based on total amount
                     if total_formatted == '$5.00':
                         expiration_date = created_at + timedelta(days=29)
                     elif total_formatted == '$48.00':
                         expiration_date = created_at + timedelta(days=364)
                     else:
-                        expiration_date = None  # Or handle other cases as needed
+                        expiration_date = None
 
                     # Save data to database
-                    print('sub id at point of save',subscription_id,sub_ids[0])
+              
                     subscription_payment, created = SubscriptionPayment.objects.get_or_create(
                         user_name=user_name,
                         defaults={
-                            'subscription_id':sub_ids[0],
+                            'subscription_id':subscription_id,
                             'event_name': event_name,
                             'created_at': created_at,
                             'total_formatted': total_formatted,
@@ -307,7 +308,7 @@ def webhook_callback(request):
 
                             # If the object already existed, update its fields with the new data
                     if not created:
-                        subscription_payment.subscription_id = sub_ids[0]
+                        subscription_payment.subscription_id = subscription_id
                         subscription_payment.event_name = event_name
                         subscription_payment.created_at = created_at
                         subscription_payment.total_formatted = total_formatted
