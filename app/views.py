@@ -252,7 +252,10 @@ def webhook_callback(request):
         
         # Compare the calculated digest with the received signature
         if hmac.compare_digest(digest, signature):
+            print('Compare was correct)
+            print(payload = json.loads(request.body))
             # If the signatures match, process the webhook payload
+            
             try:
                 # Parse the JSON payload
                 payload = json.loads(request.body)
