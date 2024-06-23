@@ -97,11 +97,42 @@
                   });
               });
           
-              // Update alert status on page load
-              updateAlertStatus();
 
-
+              <script src="{% static 'js/jquery.min.js' %}"></script>
+              <script>
+                  function updateAlertStatus() {
+                      console.log("Updating alert status...");
+                      $.ajax({
+                          url: "{% url 'get_alert_status' %}",
+                          type: "GET",
+                          dataType: "json",
+                          success: function(data) {
+                              console.log("Alert status received:", data.alert_status);
+                              var alertStatus = data.alert_status;
+                              var statusDiv = $(".alert-status-div");
+                              statusDiv.removeClass("text-red text-green");
+                              if (alertStatus === "OFF") {
+                                  statusDiv.addClass("text-red").html("<b>" + alertStatus + "</b>");
+                              } else {
+                                  statusDiv.addClass("text-green").html("<b>" + alertStatus + "</b>");
+                              }
+                          },
+                          error: function() {
+                              console.log("Error fetching alert status.");
+                          }
+                      });
+                  }
+              
+                  
+                $(document).ready(function() {
+                  // Update alert status on page load
+                  updateAlertStatus();
+              
+                  // Rest of your JavaScript code
+              
+              });
               </script>
+
             {% elif subscription_status == 'ON' %}
               <button id="cancelSubscriptionButton" class="custom-button" style="background-color: rgb(31, 31, 29); margin-bottom: 10px;" onclick="cancelSubscription()">Cancel Subscription</button>
               <button id="startButton" class="custom-button greenButton" style="margin-bottom: 10px;">Start Script</button>
@@ -179,6 +210,40 @@
                       }
                       return cookieValue;
                     }
+              </script>
+            <script src="{% static 'js/jquery.min.js' %}"></script>
+              <script>
+                  function updateAlertStatus() {
+                      console.log("Updating alert status...");
+                      $.ajax({
+                          url: "{% url 'get_alert_status' %}",
+                          type: "GET",
+                          dataType: "json",
+                          success: function(data) {
+                              console.log("Alert status received:", data.alert_status);
+                              var alertStatus = data.alert_status;
+                              var statusDiv = $(".alert-status-div");
+                              statusDiv.removeClass("text-red text-green");
+                              if (alertStatus === "OFF") {
+                                  statusDiv.addClass("text-red").html("<b>" + alertStatus + "</b>");
+                              } else {
+                                  statusDiv.addClass("text-green").html("<b>" + alertStatus + "</b>");
+                              }
+                          },
+                          error: function() {
+                              console.log("Error fetching alert status.");
+                          }
+                      });
+                  }
+              
+                  
+                $(document).ready(function() {
+                  // Update alert status on page load
+                  updateAlertStatus();
+              
+                  // Rest of your JavaScript code
+              
+              });
               </script>
 
 {% elif subscription_status == 'Your free trial is already active.' %}
