@@ -60,42 +60,45 @@
               <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
               <script>
               $(document).ready(function() {
-    $("#startButton").click(function() {
-        // Display the loading message
-        $("#message").text("Starting Script...");
 
-        $.ajax({
-            url: '/start/',
-            type: 'GET',
-            success: function(response) {
-                $("#message").text("Started: " + response.message);
-                updateAlertStatus(); // Update alert status after starting the script
-            },
-            error: function() {
-                $("#message").text("Error starting the script.");
-            }
-        });
-    });
-
-    $("#stopButton").click(function() {
-        // Display the loading message
-        $("#message").text("Stopping Script.Please wait...");
-
-        setTimeout(function() {
-            $.ajax({
-                url: '/stop/',
-                type: 'GET',
-                success: function(response) {
-                    $("#message").text("Stopped: " + response.message);
-                    updateAlertStatus(); // Update alert status after stopping the script
-                },
-                error: function() {
-                    $("#message").text("Error stopping the script.");
-                }
-            });
-        }, 500); // Delay of 500 milliseconds
-    });
-});
+              // Start button click event
+              $("#startButton").click(function() {
+                  // Display the loading message
+                  $("#message").text("Starting Script...");
+          
+                  $.ajax({
+                      url: '/start/',
+                      type: 'GET',
+                      success: function(response) {
+                          $("#message").text("Started: " + response.message);
+                          updateAlertStatus(); // Update alert status after starting the script
+                      },
+                      error: function() {
+                          $("#message").text("Error starting the script.");
+                      }
+                  });
+              });
+          
+              // Stop button click event
+              $("#stopButton").click(function() {
+                  // Display the loading message
+                  $("#message").text("Stopping Script. Please wait...");
+          
+                  $.ajax({
+                      url: '/stop/',
+                      type: 'GET',
+                      success: function(response) {
+                          $("#message").text("Stopped: " + response.message);
+                          updateAlertStatus(); // Update alert status after stopping the script
+                      },
+                      error: function() {
+                          $("#message").text("Error stopping the script.");
+                      }
+                  });
+              });
+          
+              // Update alert status on page load
+              updateAlertStatus();
 
 
               </script>
@@ -107,44 +110,46 @@
               <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
               <script>
               $(document).ready(function() {
-    $("#startButton").click(function() {
-        // Display the loading message
-        $("#message").text("Starting Script...");
 
-        $.ajax({
-            url: '/start/',
-            type: 'GET',
-            success: function(response) {
-                $("#message").text("Started: " + response.message);
-                updateAlertStatus(); // Update alert status after starting the script
-            },
-            error: function() {
-                $("#message").text("Error starting the script.");
-            }
-        });
-    });
-
-    $("#stopButton").click(function() {
-        // Display the loading message
-        $("#message").text("Stopping Script.Please wait...");
-
-        setTimeout(function() {
-            $.ajax({
-                url: '/stop/',
-                type: 'GET',
-                success: function(response) {
-                    $("#message").text("Stopped: " + response.message);
-                    updateAlertStatus(); // Update alert status after stopping the script
-                },
-                error: function() {
-                    $("#message").text("Error stopping the script.");
-                }
-            });
-        }, 500); // Delay of 500 milliseconds
-    });
-});
-              </script>
+              // Start button click event
+              $("#startButton").click(function() {
+                  // Display the loading message
+                  $("#message").text("Starting Script...");
           
+                  $.ajax({
+                      url: '/start/',
+                      type: 'GET',
+                      success: function(response) {
+                          $("#message").text("Started: " + response.message);
+                          updateAlertStatus(); // Update alert status after starting the script
+                      },
+                      error: function() {
+                          $("#message").text("Error starting the script.");
+                      }
+                  });
+              });
+          
+              // Stop button click event
+              $("#stopButton").click(function() {
+                  // Display the loading message
+                  $("#message").text("Stopping Script. Please wait...");
+          
+                  $.ajax({
+                      url: '/stop/',
+                      type: 'GET',
+                      success: function(response) {
+                          $("#message").text("Stopped: " + response.message);
+                          updateAlertStatus(); // Update alert status after stopping the script
+                      },
+                      error: function() {
+                          $("#message").text("Error stopping the script.");
+                      }
+                  });
+              });
+          
+              // Update alert status on page load
+              updateAlertStatus();
+              </script>
               <script>
                   function cancelSubscription() {
                       fetch("{% url 'cancel-subscription' %}", {
